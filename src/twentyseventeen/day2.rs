@@ -2,19 +2,13 @@ use return_codes;
 use std::io::{self, Read};
 
 make_dispatch_and_help!(
-    "advent-of-code 2017 1",
+    "advent-of-code 2017 2",
     "1" => part1 => part1_help => "" => "Part 1: sum of differences between min and max of each line (takes input on stdin)",
     "2" => part2 => part2_help => "" => "Part 2: sum of x / y for each line, where x | y for all distinct x, y in the line (takes input on stdin)"
 );
 
 fn part1(args: &mut Vec<String>) -> Result<(), i32> {
-    let argument_count = args.len();
-    if argument_count != 0 {
-        return match part1_help(args) {
-            Ok(()) => Err(return_codes::TOO_MANY_ARGUMENTS),
-            e => e,
-        };
-    }
+    require_exactly_arguments!(args, 0, part1_help);
 
     let mut buffer = String::new();
     if let Err(e) = io::stdin().read_to_string(&mut buffer) {
@@ -27,13 +21,7 @@ fn part1(args: &mut Vec<String>) -> Result<(), i32> {
 }
 
 fn part2(args: &mut Vec<String>) -> Result<(), i32> {
-    let argument_count = args.len();
-    if argument_count != 0 {
-        return match part2_help(args) {
-            Ok(()) => Err(return_codes::TOO_MANY_ARGUMENTS),
-            e => e,
-        };
-    }
+    require_exactly_arguments!(args, 0, part2_help);
 
     let mut buffer = String::new();
     if let Err(e) = io::stdin().read_to_string(&mut buffer) {
@@ -45,7 +33,7 @@ fn part2(args: &mut Vec<String>) -> Result<(), i32> {
     Ok(())
 }
 
-fn sum_of_difference_min_and_max_each_line(s: &String) -> u32 {
+fn sum_of_difference_min_and_max_each_line(s: &str) -> u32 {
     let mut sum: u32 = 0;
 
     for line in s.lines() {
@@ -69,7 +57,7 @@ fn sum_of_difference_min_and_max_each_line(s: &String) -> u32 {
     sum
 }
 
-fn sum_of_possible_divisions_each_line(s: &String) -> i32 {
+fn sum_of_possible_divisions_each_line(s: &str) -> i32 {
     let mut sum: i32 = 0;
 
     for line in s.lines() {

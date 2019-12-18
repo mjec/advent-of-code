@@ -2,47 +2,35 @@ use return_codes;
 
 make_dispatch_and_help!(
     "advent-of-code 2017 1",
-    "1" => part1 => part1_help => "digit-string" => "Part 1: sum of digit equal to the next digit",
-    "2" => part2 => part2_help => "digit-string" => "Part 2: sum of digits half way across from themselves"
+    "1" => part1 => part1_help => "<digit-string>" => "Part 1: sum of digit equal to the next digit",
+    "2" => part2 => part2_help => "<digit-string>" => "Part 2: sum of digits half way across from themselves"
 );
 
 fn part1(args: &mut Vec<String>) -> Result<(), i32> {
-    let argument_count = args.len();
-    if argument_count != 1 {
-        return match part1_help(args) {
-            Ok(()) => Err(return_codes::TOO_MANY_ARGUMENTS),
-            e => e,
-        };
-    }
+    require_exactly_arguments!(args, 1, part1_help);
 
-    if args[0].len() == 0 {
+    if args[0].is_empty() {
         return Err(return_codes::BAD_DATA);
     }
 
-    println!("{}", sum_of_consecutive_equal_digits(&mut args[0]));
+    println!("{}", sum_of_consecutive_equal_digits(&args[0]));
     Ok(())
 }
 
 fn part2(args: &mut Vec<String>) -> Result<(), i32> {
-    let argument_count = args.len();
-    if argument_count != 1 {
-        return match part2_help(args) {
-            Ok(()) => Err(return_codes::TOO_MANY_ARGUMENTS),
-            e => e,
-        };
-    }
+    require_exactly_arguments!(args, 1, part2_help);
 
     args[0].retain(|c| c.is_numeric());
 
-    if args[0].len() == 0 || args[0].len() % 2 == 1 {
+    if args[0].is_empty() || args[0].len() % 2 == 1 {
         return Err(return_codes::BAD_DATA);
     }
 
-    println!("{}", sum_of_oppsite_equal_digits(&mut args[0]));
+    println!("{}", sum_of_oppsite_equal_digits(&args[0]));
     Ok(())
 }
 
-fn sum_of_consecutive_equal_digits(s: &String) -> u32 {
+fn sum_of_consecutive_equal_digits(s: &str) -> u32 {
     let mut sum: u32 = 0;
     let mut characters = s.chars().filter(|c| c.is_numeric()).peekable();
     let first_character = *characters.peek().unwrap();
@@ -61,7 +49,7 @@ fn sum_of_consecutive_equal_digits(s: &String) -> u32 {
     sum
 }
 
-fn sum_of_oppsite_equal_digits(s: &String) -> u32 {
+fn sum_of_oppsite_equal_digits(s: &str) -> u32 {
     let mut sum: u32 = 0;
     let mut i = 0;
     while i < s.len() {

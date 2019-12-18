@@ -1,0 +1,85 @@
+use return_codes;
+use std::collections::HashSet;
+use std::io::{self, Read};
+
+make_dispatch_and_help!(
+    "advent-of-code 2018 1",
+    "1" => part1 => part1_help => "" => "Part 1: sum of inputs (takes line-delimited input on stdin)",
+    "2" => part2 => part2_help => "" => "Part 2: first number reached twice doing a cycle sum of inputs (takes line-delimited input on stdin)"
+);
+
+fn part1(args: &mut Vec<String>) -> Result<(), i32> {
+    require_exactly_arguments!(args, 0, part1_help);
+
+    let mut buffer = String::new();
+    if let Err(e) = io::stdin().read_to_string(&mut buffer) {
+        println!("Unable to read from stdin: {:?}", e);
+        return Err(e.raw_os_error().unwrap_or(return_codes::BAD_DATA));
+    }
+
+    println!("{}", sum_of_string(&buffer));
+    Ok(())
+}
+
+fn part2(args: &mut Vec<String>) -> Result<(), i32> {
+    require_exactly_arguments!(args, 0, part1_help);
+
+    let mut buffer = String::new();
+    if let Err(e) = io::stdin().read_to_string(&mut buffer) {
+        println!("Unable to read from stdin: {:?}", e);
+        return Err(e.raw_os_error().unwrap_or(return_codes::BAD_DATA));
+    }
+
+    println!("{}", first_reached_twice(&buffer));
+    Ok(())
+}
+
+fn sum_of_string(stdin: &str) -> i32 {
+    let mut result: i32 = 0;
+    for line in stdin.lines() {
+        result += match line.parse::<i32>() {
+            Ok(x) => x,
+            Err(_) => 0,
+        }
+    }
+    result
+}
+
+fn first_reached_twice(stdin: &str) -> i32 {
+    let mut result: i32 = 0;
+    let mut lines = stdin.lines().cycle();
+    let mut numbers_seen: HashSet<i32> = HashSet::new();
+    numbers_seen.insert(0);
+    loop {
+        result += match lines.next().unwrap().parse::<i32>() {
+            Ok(x) => x,
+            Err(_) => 0,
+        };
+        if numbers_seen.contains(&result) {
+            break;
+        }
+        numbers_seen.insert(result);
+    }
+    result
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_sum_of_string() {
+        assert_eq!(3, sum_of_string(&String::from("+1\n+1\n+1")));
+        assert_eq!(0, sum_of_string(&String::from("+1\n+1\n-2")));
+        assert_eq!(-6, sum_of_string(&String::from("-1\n-2\n-3")));
+    }
+
+    #[test]
+    fn test_first_reached_twice() {
+        assert_eq!(0, first_reached_twice(&String::from("+1\n-1")));
+        assert_eq!(10, first_reached_twice(&String::from("+3\n+3\n+4\n-2\n-4")));
+        assert_eq!(5, first_reached_twice(&String::from("-6\n+3\n+8\n+5\n-6")));
+        assert_eq!(14, first_reached_twice(&String::from("+7\n+7\n-2\n-7\n-4")));
+    }
+
+}

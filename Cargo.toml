@@ -3,4 +3,10 @@ name = "advent-of-code"
 version = "0.1.0"
 authors = ["Michael Cordover <public@mjec.net>"]
 
+[features]
+default = ["pause-on-start"]
+pause-on-start = ["termion"]
+
 [dependencies]
+termion = { version = "*", optional = true }
+
